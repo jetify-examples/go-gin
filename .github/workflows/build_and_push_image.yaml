@@ -57,7 +57,7 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker credentials
-        run: gcloud auth configure-docker us-docker.pkg.dev
+        run: gcloud auth configure-docker us-east4-docker.pkg.dev
 
       - name: Install Devbox
         uses: jetify-com/devbox-install-action@v0.11.0
@@ -69,5 +69,9 @@ jobs:
           IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
         run: |
           devbox generate dockerfile --for prod
+          echo "generated dockerfile:"
+          cat Dockerfile
+          echo "building ${{ env.IMAGE }}..."
           docker build . -t ${{ env.IMAGE }}:latest
+          echo "built ${{ env.IMAGE }}. now trying to push..."
           docker push ${{ env.IMAGE }} --all-tags
