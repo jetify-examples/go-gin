@@ -66,8 +66,14 @@ jobs:
 
       - name: Build and push
         env:
-          IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/go-gin"
+          IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ github.event.repository.name }}"
         run: |
+          echo "docker config"
+          cat ~/.docker/config.json
+          echo "gcloud auth list"
+          gcloud auth list
+          echo "Docker login"
+          docker login us-east4-docker.pkg.dev
           echo "repo name is ${{ github.event.repository.name }}"
           devbox generate dockerfile --for prod
           echo "generated dockerfile:"
