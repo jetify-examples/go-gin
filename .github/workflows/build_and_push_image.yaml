@@ -10,7 +10,7 @@ on:
 env:
   ID_PROVIDER: projects/744310309265/locations/global/workloadIdentityPools/gha-oidc-pool/providers/gha-oidc-provider
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  REPOSITORY: github_public
+  REPOSITORY: github-public
   REGION: us-east4
   REGISTRY: us-east4-docker.pkg.dev
 
