@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - "main"
-      - "rodrigo/*"
 
 env:
   ID_PROVIDER: projects/744310309265/locations/global/workloadIdentityPools/gha-oidc-pool/providers/gha-oidc-provider
@@ -18,7 +17,7 @@ jobs:
   build-image:
     strategy:
       matrix:
-        project_id: [dev-j3tpk]
+        project_id: [dev-j3tpk, nonprod-j3tpk, prod-j3tpk]
 
     permissions:
       contents: read
