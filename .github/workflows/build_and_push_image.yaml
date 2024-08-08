@@ -10,7 +10,7 @@ on:
 env:
   ID_PROVIDER: projects/744310309265/locations/global/workloadIdentityPools/gha-oidc-pool/providers/gha-oidc-provider
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  REPOSITORY: github
+  REPOSITORY: github_public
   REGION: us-east4
   REGISTRY: us-east4-docker.pkg.dev
 
@@ -56,26 +56,18 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      - name: Configure Docker credentials
+        run: gcloud auth configure-docker us-docker.pkg.dev
+
+      - name: Install Devbox
+        uses: jetify-com/devbox-install-action@v0.11.0
         with:
-          go-version-file: go.work
-          cache: false
+          enable-cache: true
 
-      - name: Setup Ko
-        uses: ko-build/setup-ko@v0.7
-
-      - name: Login to Artifact Registry
-        run: |-
-          ko login "${{ env.REGISTRY }}" --username oauth2accesstoken --password "${{ steps.auth.outputs.access_token }}"
-
-      - name: Build and Publish Image
+      - name: Build and push
         env:
-          KO_DOCKER_REPO: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
-        run: |-
-          ko build -B . \
-            --image-label "repository=${{ github.repository }}" \
-            --image-label "revision=${{ github.sha }}" \
-            --image-label "ref=${{ github.ref_name }}" \
-            --image-label "workflow=${{ github.workflow_ref }}" \
-            --tags "latest"
+          IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
+        run: |
+          devbox generate dockerfile --for prod
+          docker build . -t ${{ env.IMAGE }}:latest
+          docker push ${{ env.IMAGE }} --all-tags
