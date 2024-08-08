@@ -76,6 +76,6 @@ jobs:
             --label "revision=${{ github.sha }}" \
             --label "ref=${{ github.ref_name }}" \
             --label "workflow=${{ github.workflow_ref }}" \
-            -t ${{ env.IMAGE }}:${{ github.sha }}" \
+            -t ${{ env.IMAGE }}:${{ github.sha }} \
             -t ${{ env.IMAGE }}:latest
           docker push ${{ env.IMAGE }} --all-tags
