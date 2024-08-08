@@ -66,8 +66,9 @@ jobs:
 
       - name: Build and push
         env:
-          IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"
+          IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}"/go-gin
         run: |
+          echo "repo name is ${{ github.event.repository.name }}"
           devbox generate dockerfile --for prod
           echo "generated dockerfile:"
           cat Dockerfile
