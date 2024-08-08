@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-  // a test comment
 	router := gin.New()
 
 	router.GET("/", root.Root)
