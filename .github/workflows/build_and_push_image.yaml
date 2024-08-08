@@ -68,17 +68,14 @@ jobs:
         env:
           IMAGE: "${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ github.event.repository.name }}"
         run: |
-          echo "docker config"
-          cat ~/.docker/config.json
-          echo "gcloud auth list"
-          gcloud auth list
-          echo "Docker login"
-          docker login us-east4-docker.pkg.dev
-          echo "repo name is ${{ github.event.repository.name }}"
-          devbox generate dockerfile --for prod
-          echo "generated dockerfile:"
-          cat Dockerfile
-          echo "building ${{ env.IMAGE }}..."
-          docker build . -t ${{ env.IMAGE }}:latest
-          echo "built ${{ env.IMAGE }}. now trying to push..."
+          if [ ! -f Dockerfile ]; then
+            devbox generate dockerfile --for prod
+          fi
+          docker build . \
+            --label "repository=${{ github.repository }}" \
+            --label "revision=${{ github.sha }}" \
+            --label "ref=${{ github.ref_name }}" \
+            --label "workflow=${{ github.workflow_ref }}" \
+            -t ${{ env.IMAGE }}:${{ github.sha }}" \
+            -t ${{ env.IMAGE }}:latest
           docker push ${{ env.IMAGE }} --all-tags
